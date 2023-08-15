@@ -8,3 +8,6 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = '__all__'
+
+class SearchForm(forms.Form):
+    q = forms.CharField(label="Search files", required=False)

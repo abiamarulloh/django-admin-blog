@@ -18,6 +18,12 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.admin.views.decorators import staff_member_required
+from django.urls import re_path
+from django.views.decorators.cache import never_cache
+from . import views
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,4 +45,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('blog_api.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
-]
+    re_path(r"^upload/", staff_member_required(views.upload), name="ckeditor_upload"),
+    re_path(
+        r"^browse/",
+        never_cache(staff_member_required(views.browse)),
+        name="ckeditor_browse",
+    ),
+] + static(settings.MEDIA_URL, document_root=settings.STATIC_ROOT)
